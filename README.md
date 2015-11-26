@@ -1,1 +1,2 @@
-# ILS_lab2
+# ILS lab2
+# -MDP-s, RL & GA
