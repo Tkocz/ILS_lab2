@@ -31,7 +31,20 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
+        import math as m
+        self.newValues = self.values
+        #for i in range(iterations):
+        for state in self.mdp.getStates():
+            currentHigh = 0
+            temp = 0
 
+            for direction in self.mdp.getPossibleActions(state):
+                temp = self.getQValue(state, direction)
+                if m.sqrt(temp*temp) > m.sqrt(currentHigh*currentHigh):
+                    currentHigh= temp
+                    self.newValues[state] = currentHigh
+
+            self.values = self.newValues
 
     def getValue(self, state):
         """
@@ -46,7 +59,16 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        #util.raiseNotDefined()
+        value = 0
+        if self.mdp.isTerminal(state): return self.getValue(state)
+        else:
+            for i in self.mdp.getTransitionStatesAndProbs(state, action):
+                stateAndProbs = i
+                nextState = stateAndProbs[0]
+                probs = stateAndProbs[1]
+                value += probs*(self.discount * self.mdp.getReward(state, action, nextState))
+            return value
 
     def computeActionFromValues(self, state):
         """
@@ -58,7 +80,19 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        currentBest = 0
+        currentBestDir = 'north'
+
+        #if self.mdp.isTerminal(state): return 0
+
+        for direction in self.mdp.getPossibleActions(state):
+            temp = self.getQValue(state, direction)
+            if temp > currentBest:
+                currentBest = temp
+                currentBestDir = direction
+
+        return currentBestDir
+
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)

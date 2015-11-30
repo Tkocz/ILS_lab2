@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Uppgift 3.1" type="PythonConfigurationType" factoryName="Python">
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs>
+      <env name="PYTHONUNBUFFERED" value="1" />
+    </envs>
+    <option name="SDK_HOME" value="C:\Python27\python.exe" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="IS_MODULE_SDK" value="false" />
+    <option name="ADD_CONTENT_ROOTS" value="true" />
+    <option name="ADD_SOURCE_ROOTS" value="true" />
+    <module name="ILS_lab2" />
+    <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+    <option name="SCRIPT_NAME" value="gridworld.py" />
+    <option name="PARAMETERS" value="-g BookGrid -a value -i 100 -k 10" />
+    <option name="SHOW_COMMAND_LINE" value="false" />
+    <method />
+  </configuration>
+</component>
