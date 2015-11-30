@@ -13,7 +13,7 @@
     <module name="ILS_lab2" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
     <option name="SCRIPT_NAME" value="gridworld.py" />
-    <option name="PARAMETERS" value="-g MazeGrid" />
+    <option name="PARAMETERS" value="-g BookGrid -a value -i 5" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <method />
   </configuration>

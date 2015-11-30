@@ -33,18 +33,20 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         import math as m
         self.newValues = self.values
-        #for i in range(iterations):
-        for state in self.mdp.getStates():
-            currentHigh = 0
-            temp = 0
+        for i in range(iterations):
+            for state in reversed(self.mdp.getStates()):
+                currentHigh = 0
 
-            for direction in self.mdp.getPossibleActions(state):
-                temp = self.getQValue(state, direction)
-                if m.sqrt(temp*temp) > m.sqrt(currentHigh*currentHigh):
-                    currentHigh= temp
-                    self.newValues[state] = currentHigh
+                for direction in self.mdp.getPossibleActions(state):
+                    temp = self.getQValue(state, direction)
+                    if m.sqrt(temp*temp) > m.sqrt(currentHigh*currentHigh):
+                        currentHigh= temp
+                        if self.mdp.isTerminal(state):
+                            self.newValues[state] = 0
+                        else:
+                            self.newValues[state] = currentHigh
 
-            self.values = self.newValues
+        self.values = self.newValues
 
     def getValue(self, state):
         """
@@ -61,14 +63,16 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         #util.raiseNotDefined()
         value = 0
-        if self.mdp.isTerminal(state): return self.getValue(state)
-        else:
-            for i in self.mdp.getTransitionStatesAndProbs(state, action):
-                stateAndProbs = i
-                nextState = stateAndProbs[0]
-                probs = stateAndProbs[1]
-                value += probs*(self.discount * self.mdp.getReward(state, action, nextState))
-            return value
+        for i in self.mdp.getTransitionStatesAndProbs(state, action):
+            stateAndProbs = i
+
+            nextState = stateAndProbs[0]
+            probs = stateAndProbs[1]
+            if self.mdp.isTerminal(nextState): return 1
+            print nextState
+            print probs
+            value += probs*(self.discount * self.values[nextState])
+        return value
 
     def computeActionFromValues(self, state):
         """
