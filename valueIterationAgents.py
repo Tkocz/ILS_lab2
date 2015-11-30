@@ -33,7 +33,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         import math as m
         import copy as c
-        self.newValues = (self.values)
+        self.newValues = self.values
         for i in range(iterations):
             for state in reversed(self.mdp.getStates()):
                 currentHigh = 0
@@ -44,7 +44,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                         currentHigh = temp
                         self.newValues[state] = currentHigh
 
-        self.values = c.deepcopy(self.newValues)
+        self.values = self.newValues
 
     def getValue(self, state):
         """
@@ -66,10 +66,12 @@ class ValueIterationAgent(ValueEstimationAgent):
 
             nextState = stateAndProbs[0]
             probs = stateAndProbs[1]
-            if self.mdp.isTerminal(nextState): return self.mdp.getReward(state, 'exit', nextState)
-            print nextState
-            print probs
-            value += probs*(self.discount * self.values[nextState])
+            if self.mdp.isTerminal(nextState):
+                value += self.mdp.getReward(state, 'exit', nextState)
+                print nextState
+                print value
+            else:
+                value += probs*(self.discount * self.values[nextState])
         return value
 
     def computeActionFromValues(self, state):
