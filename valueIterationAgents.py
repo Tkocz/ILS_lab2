@@ -33,10 +33,11 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         import math as m
         import copy as c
+        import sys
         self.newValues = self.values
         for i in range(iterations):
             for state in reversed(self.mdp.getStates()):
-                currentHigh = 0
+                currentHigh = -sys.maxint
 
                 for direction in self.mdp.getPossibleActions(state):
                     temp = self.getQValue(state, direction)
@@ -68,8 +69,6 @@ class ValueIterationAgent(ValueEstimationAgent):
             probs = stateAndProbs[1]
             if self.mdp.isTerminal(nextState):
                 value += self.mdp.getReward(state, 'exit', nextState)
-                print nextState
-                print value
             else:
                 value += probs*(self.discount * self.values[nextState])
         return value
@@ -84,8 +83,9 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        currentBest = 0
-        currentBestDir = 'north'
+        import sys
+        currentBest = -sys.maxint
+        currentBestDir = None
 
         #if self.mdp.isTerminal(state): return 0
 
