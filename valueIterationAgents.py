@@ -62,7 +62,7 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         """
         self.newValues = c.deepcopy(self.values)
-        for i in range(iterations):
+        for i in range(iterations - 1):
             count = 0
             for state in reversed(self.mdp.getStates()):
                 if count == i*i: break
@@ -72,11 +72,8 @@ class ValueIterationAgent(ValueEstimationAgent):
                     temp = self.getQValue(state, direction)
                     if temp > currentHigh:
                         currentHigh = temp
-                if not self.mdp.getPossibleActions(state) == ('exit',):
-                    self.newValues[state] += currentHigh
-                    self.newValues[state] /= 2.0
-                else:
-                    self.newValues[state] = currentHigh
+
+                self.newValues[state] = currentHigh
                 count += 1
             self.values = self.newValues
 
