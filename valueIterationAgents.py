@@ -24,58 +24,42 @@ class ValueIterationAgent(ValueEstimationAgent):
               mdp.getReward(state, action, nextState)
               mdp.isTerminal(state)
         """
-        self.mdp = mdp
-        self.discount = discount
-        self.iterations = iterations
-        self.values = util.Counter() # A Counter is a dict with default 0
-        self.newValues = util.Counter()
-        # Write value iteration code here
-        "*** YOUR CODE HERE ***"
-        import math as m
-        import copy as c
+        self.mdp         = mdp
+        self.discount    = discount
+        self.iterations  = iterations
+        self.values      = util.Counter() # A Counter is a dict with default 0
+
+        # NOTE: The naming conventions are a bit off. This is to emphasize the
+        #       connection between code and the formulas we were provided with.
+        #       Enjoy!
+
         import sys
-        """
 
-        for state in self.mdp.getStates():
-            if not self.mdp.getPossibleActions(state) == ('exit',):
-                self.values[state] = 0
-
-
-
+        values_temp = util.Counter()
         for i in range(iterations):
-            #delta = -sys.maxint
-            for state in self.mdp.getStates():
+            for state in mdp.getStates():
+                Q_max = -sys.maxint
 
-                self.newValues[state] = self.values[state]
+                # A terminal state has no actions, so we must be careful to
+                # reset the value to zero here.
+                if mdp.isTerminal(state):
+                    Q_max = 0.0
 
-                for direction in self.mdp.getPossibleActions(state):
-                    self.newValues[state] = self.getQValue(state, direction)
-                    if self.newValues[state] > self.values[state]:
-                        if self.mdp.getPossibleActions(state) == ('exit',):
-                            self.values[state] = self.newValues[state]
-                        else:
-                            self.values[state] += self.newValues[state]
-                            self.values[state] /= 2.0
+                # This is a trivial loop to find the 'best' possible action in
+                # the current state, according to computed Q values.  This is
+                # essentially the Pythonic way of saying the following:
+                #   V_k+1(s) <- max Q(s, a)
+                for action in mdp.getPossibleActions(state):
+                    Q = self.computeQValueFromValues(state, action)
+                    if Q > Q_max:
+                        Q_max = Q
 
-                #delta = max(delta, self.values[state])
-                #self.values[state] = delta
+                values_temp[state] = Q_max
 
-        """
-        self.newValues = c.deepcopy(self.values)
-        for i in range(iterations - 1):
-            count = 0
-            for state in reversed(self.mdp.getStates()):
-                if count == i*i: break
-                currentHigh = -sys.maxint
+            # Store the new values.
+            self.values = values_temp
+            values_temp = util.Counter()
 
-                for direction in self.mdp.getPossibleActions(state):
-                    temp = self.getQValue(state, direction)
-                    if temp > currentHigh:
-                        currentHigh = temp
-
-                self.newValues[state] = currentHigh
-                count += 1
-            self.values = self.newValues
 
     def getValue(self, state):
         """
@@ -89,19 +73,19 @@ class ValueIterationAgent(ValueEstimationAgent):
           Compute the Q-value of action in state from the
           value function stored in self.values.
         """
-        "*** YOUR CODE HERE ***"
-        #util.raiseNotDefined()
-        value = 0
-        for i in self.mdp.getTransitionStatesAndProbs(state, action):
-            stateAndProbs = i
 
-            nextState = stateAndProbs[0]
-            probs = stateAndProbs[1]
-            if self.mdp.isTerminal(nextState):
-                value += self.mdp.getReward(state, 'exit', nextState)
-            else:
-                value += probs*(self.discount * self.values[nextState])
-        return value
+        Q = 0.0
+
+        for s_prim, T in self.mdp.getTransitionStatesAndProbs(state, action):
+            s      = state
+            R      = self.mdp.getReward(s, action, s_prim)
+            V      = self.values[s_prim]
+            gamma  = self.discount
+
+            # It should be obvious what formula we're implementing here! :-)
+            Q += T * (R + gamma * V)
+
+        return Q
 
     def computeActionFromValues(self, state):
         """
@@ -112,21 +96,25 @@ class ValueIterationAgent(ValueEstimationAgent):
           there are no legal actions, which is the case at the
           terminal state, you should return None.
         """
-        "*** YOUR CODE HERE ***"
+
         import sys
-        currentBest = -sys.maxint
-        currentBestDir = None
 
-        #if self.mdp.isTerminal(state): return 0
+        policy_action = None
+        Q_max         = -sys.maxint
 
-        for direction in self.mdp.getPossibleActions(state):
-            temp = self.getQValue(state, direction)
-            if temp > currentBest:
-                currentBest = temp
-                currentBestDir = direction
+        # Below; find the highest Q value and return the action associated with
+        # it, which is essentially the policy we're after.  This method will
+        # automatically return None for terminal states since they have no
+        # possible actions.  We break ties by returning the action we encounter
+        # first which is an amazingly cheap and lousy solution, but the
+        # assignments requires nothing more of us. :-)
+        for action in self.mdp.getPossibleActions(state):
+            Q = self.computeQValueFromValues(state, action)
+            if Q > Q_max:
+                Q_max         = Q
+                policy_action = action
 
-        return currentBestDir
-
+        return policy_action
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
