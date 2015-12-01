@@ -28,24 +28,57 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.discount = discount
         self.iterations = iterations
         self.values = util.Counter() # A Counter is a dict with default 0
-
+        self.newValues = util.Counter()
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
         import math as m
         import copy as c
         import sys
-        self.newValues = self.values
+        """
+
+        for state in self.mdp.getStates():
+            if not self.mdp.getPossibleActions(state) == ('exit',):
+                self.values[state] = 0
+
+
+
         for i in range(iterations):
+            #delta = -sys.maxint
+            for state in self.mdp.getStates():
+
+                self.newValues[state] = self.values[state]
+
+                for direction in self.mdp.getPossibleActions(state):
+                    self.newValues[state] = self.getQValue(state, direction)
+                    if self.newValues[state] > self.values[state]:
+                        if self.mdp.getPossibleActions(state) == ('exit',):
+                            self.values[state] = self.newValues[state]
+                        else:
+                            self.values[state] += self.newValues[state]
+                            self.values[state] /= 2.0
+
+                #delta = max(delta, self.values[state])
+                #self.values[state] = delta
+
+        """
+        self.newValues = c.deepcopy(self.values)
+        for i in range(iterations):
+            count = 0
             for state in reversed(self.mdp.getStates()):
+                if count == i*i: break
                 currentHigh = -sys.maxint
 
                 for direction in self.mdp.getPossibleActions(state):
                     temp = self.getQValue(state, direction)
                     if temp > currentHigh:
                         currentHigh = temp
-                        self.newValues[state] = currentHigh
-
-        self.values = self.newValues
+                if not self.mdp.getPossibleActions(state) == ('exit',):
+                    self.newValues[state] += currentHigh
+                    self.newValues[state] /= 2.0
+                else:
+                    self.newValues[state] = currentHigh
+                count += 1
+            self.values = self.newValues
 
     def getValue(self, state):
         """
