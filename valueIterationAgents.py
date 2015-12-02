@@ -50,7 +50,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                 # essentially the Pythonic way of saying the following:
                 #   V_k+1(s) <- max Q(s, a)
                 for action in mdp.getPossibleActions(state):
-                    Q = self.computeQValueFromValues(state, action)
+                    Q = self.getQValue(state, action)
                     if Q > Q_max:
                         Q_max = Q
 
@@ -109,7 +109,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         # first which is an amazingly cheap and lousy solution, but the
         # assignments requires nothing more of us. :-)
         for action in self.mdp.getPossibleActions(state):
-            Q = self.computeQValueFromValues(state, action)
+            Q = self.getQValue(state, action)
             if Q > Q_max:
                 Q_max         = Q
                 policy_action = action
