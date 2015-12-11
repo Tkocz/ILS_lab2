@@ -53,14 +53,17 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         "*** YOUR CODE HERE ***"
-        Q_max = 0.0
+        Q_max = -sys.maxint
 
         for action in self.getLegalActions(state):
             Q = self.getQValue(state, action)
             if Q > Q_max:
                 Q_max = Q
 
-        return Q_max
+        if Q_max == -sys.maxint:
+            return 0.0
+        else:
+            return Q_max
 
 
     def computeActionFromQValues(self, state):
@@ -72,8 +75,12 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
         import sys
 
+        print "oh nooooo"
+        while True: print "fooo"
+
         policy_action = None
         Q_max         = -sys.maxint
+        bestAction = {}
 
         # Below; find the highest Q value and return the action associated with
         # it, which is essentially the policy we're after.  This method will
@@ -84,13 +91,15 @@ class QLearningAgent(ReinforcementAgent):
         for action in self.getLegalActions(state):
             if (state, action) in self.values.keys():
                 Q = self.getQValue(state, action)
+                if Q == Q_max:
+                    bestAction.append(action)
                 if Q > Q_max:
+                    bestAction = {action}
                     Q_max         = Q
-                    policy_action = action
 
-        if Q_max == 0.0:
-            policy_action = random.choice(self.getLegalActions(state))
+        print "assssss"
 
+        policy_action = random.choice(bestAction)
         return policy_action
 
     def getAction(self, state):
@@ -109,6 +118,9 @@ class QLearningAgent(ReinforcementAgent):
         action = None
         "*** YOUR CODE HERE ***"
         import util
+
+        if legalActions == ('exit',):
+            return 'exit'
 
         if util.flipCoin(self.epsilon):
             action = random.choice(legalActions)
@@ -131,9 +143,10 @@ class QLearningAgent(ReinforcementAgent):
         gamma = self.discount
         max_Q = self.getValue(nextState)
 
-        this_state = ((1 - alpha) * this_state) + (alpha * (reward + gamma * max_Q))
+        this_state = ((1.0 - alpha) * this_state) + (alpha * (reward + gamma * max_Q))
 
         self.values[state, action] = this_state
+
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
