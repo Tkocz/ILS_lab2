@@ -75,12 +75,9 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
         import sys
 
-        print "oh nooooo"
-        while True: print "fooo"
-
         policy_action = None
         Q_max         = -sys.maxint
-        bestAction = {}
+        bestAction = []
 
         # Below; find the highest Q value and return the action associated with
         # it, which is essentially the policy we're after.  This method will
@@ -92,12 +89,13 @@ class QLearningAgent(ReinforcementAgent):
             if (state, action) in self.values.keys():
                 Q = self.getQValue(state, action)
                 if Q == Q_max:
-                    bestAction.append(action)
+                    if not action in bestAction:
+                        bestAction.append(action)
                 if Q > Q_max:
-                    bestAction = {action}
+                    bestAction = [action]
                     Q_max         = Q
 
-        print "assssss"
+        if len(bestAction) == 0: return random.choice(self.getLegalActions(state))
 
         policy_action = random.choice(bestAction)
         return policy_action
@@ -125,7 +123,7 @@ class QLearningAgent(ReinforcementAgent):
         if util.flipCoin(self.epsilon):
             action = random.choice(legalActions)
         else:
-            action = self.getAction(state)
+            action = self.getPolicy(state)
         return action
 
     def update(self, state, action, nextState, reward):
