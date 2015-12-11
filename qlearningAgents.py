@@ -86,14 +86,14 @@ class QLearningAgent(ReinforcementAgent):
         # first which is an amazingly cheap and lousy solution, but the
         # assignments requires nothing more of us. :-)
         for action in self.getLegalActions(state):
-            if (state, action) in self.values.keys():
-                Q = self.getQValue(state, action)
-                if Q == Q_max:
-                    if not action in bestAction:
-                        bestAction.append(action)
-                if Q > Q_max:
-                    bestAction = [action]
-                    Q_max         = Q
+            #if (state, action) in self.values.keys():
+            Q = self.getQValue(state, action)
+            if Q == Q_max:
+                if not action in bestAction:
+                    bestAction.append(action)
+            if Q > Q_max:
+                bestAction = [action]
+                Q_max         = Q
 
         if len(bestAction) == 0: return random.choice(self.getLegalActions(state))
 
@@ -206,15 +206,42 @@ class ApproximateQAgent(PacmanQAgent):
           Should return Q(state,action) = w * featureVector
           where * is the dotProduct operator
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        Q = 0.0
+
+        for featureName, featureValue in self.featExtractor.getFeatures(state, action).iteritems():
+            Q += self.weights[featureName] * featureValue
+
+        return Q
 
     def update(self, state, action, nextState, reward):
         """
            Should update your weights based on transition
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        import sys
+
+        s     = state
+        a     = action
+        s_prim = nextState
+        alpha = self.alpha
+        gamma = self.discount
+        r     = reward
+
+        for featureName, featureValue in self.featExtractor.getFeatures(state, action).iteritems():
+            if featureName not in self.weights.keys():
+                self.weights[featureName] = 0.0
+
+            Q = self.getQValue(s, a)
+            max_Q = -sys.maxint
+
+            for a_prim in self.getLegalActions(s_prim):
+                temp = self.getQValue(s_prim, a_prim)
+                if temp > max_Q:
+                    max_Q = temp
+
+            diff = r + gamma * max_Q - Q
+            if max_Q != -sys.maxint:
+                self.weights[featureName] += alpha * diff * featureValue
 
     def final(self, state):
         "Called at the end of each game."
@@ -224,5 +251,6 @@ class ApproximateQAgent(PacmanQAgent):
         # did we finish training?
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
-            "*** YOUR CODE HERE ***"
+            for featureName in self.weights.keys():
+                print str(featureName) + ": " + str(self.weights[featureName])
             pass
