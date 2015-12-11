@@ -39,7 +39,6 @@ class QLearningAgent(ReinforcementAgent):
           or the Q node value otherwise
         """
         "*** YOUR CODE HERE ***"
-        Q = 0.0
 
         if (state, action) not in self.values.keys():
             return 0.0
@@ -89,6 +88,9 @@ class QLearningAgent(ReinforcementAgent):
                     Q_max         = Q
                     policy_action = action
 
+        if Q_max == 0.0:
+            policy_action = random.choice(self.getLegalActions(state))
+
         return policy_action
 
     def getAction(self, state):
@@ -106,8 +108,12 @@ class QLearningAgent(ReinforcementAgent):
         legalActions = self.getLegalActions(state)
         action = None
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        import util
 
+        if util.flipCoin(self.epsilon):
+            action = random.choice(legalActions)
+        else:
+            action = self.getAction(state)
         return action
 
     def update(self, state, action, nextState, reward):
@@ -123,12 +129,11 @@ class QLearningAgent(ReinforcementAgent):
         this_state = self.values[state, action]
         alpha = self.alpha
         gamma = self.discount
-        reward = self.computeValueFromQValues(nextState)
-        max_Q = self.computeValueFromQValues(state)
+        max_Q = self.getValue(nextState)
 
-        this_state = ((1 - alpha) * this_state) + (alpha * (reward + gamma + max_Q))
+        this_state = ((1 - alpha) * this_state) + (alpha * (reward + gamma * max_Q))
 
-        self.values[state] = this_state
+        self.values[state, action] = this_state
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
