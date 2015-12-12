@@ -62,60 +62,89 @@ class GA(object):
         return population
 
     def DecodeChromosome(self, chromosome, nVariables, variableRange):
-        nGenes = np.size(chromosome,0) # Number of genes in the chromosome
-        nBits = nGenes/nVariables      # Number of bits (genes) per variable
+        nGenes = np.size(chromosome,0)   # Number of genes in the chromosome
+        nBits  = nGenes/nVariables       # Number of bits (genes) per variable
+        vars   = np.zeros(nVariables)    # Create a one-dimensional Numpy array of variables
 
-        vars = np.zeros(nVariables)    # Create a one-dimensional Numpy array of variables
+        def bin2real(bits, u, l):
+            k = len(bits)
+            x = 0.0
+
+            for i in range(k):
+                x += 2**(-(i+1)) * int(bits[i])
+
+            x *= (u-l)/(1-2**(-k))
+            x += l
+
+            return x
 
         # Calculate the value of each variable from the bits in the bit string
 
-        ##############################
-        ### YOU'RE CODE GOES HERE ####
-        ##############################
+        for n in range(nVariables):
+            a    = n * nBits
+            b    = a + nBits
+            bits = chromosome[a:b]
+            ul   = variableRange[n]
+            vars[n] = bin2real(bits, ul[0], ul[1])
 
         return vars
 
     def RouletteWheelSelect(self, normalizedFitness):
-        selected = 0
-
         # Use Roulette-Wheel Selection to select an individual to the mating pool
-		
-		##############################
-        ### YOU'RE CODE GOES HERE ####
-        ##############################
 
-        return selected
+        import random
+
+        r = random.random()
+        n = len(normalizedFitness)
+        x = 0.0
+
+        for i in range(n):
+            x += int(normalizedFitness[i][0])
+            if x > r:
+                return i
+
+        print "SOMETHING IS NOT RIGHT"
+        return -1
 
     def TournamentSelect(self, fitness, tournamentSelectionParameter, tournamentSize):
-        selected = 0
-
 		# Use Tournament Selection to select an individual to the mating pool
-		
-        ##############################
-        ### YOU'RE CODE GOES HERE ####
-        ##############################
 
-        return selected
+        import sys
+        import util
+
+        # D3ciph3r this c0de, brah!
+        def tsel(x, p):
+            n=len(x)
+            if n==1:return x[0][0]
+            q=(-1,-sys.maxint)
+            for i in range(n):
+                f=x[i][1]
+                if f>q[1]:q=(i,f)
+            if util.flipCoin(p):return x[q[0]][0]
+            return tsel([(i,f)for i,f in x if i!=x[q[0]]],p)
+
+        x=[(i,f[0])for i,f in enumerate(fitness)]
+        return tsel(x,tournamentSelectionParameter)
 
     def Cross(self, chromosome1, chromosome2, crossoverProbability):
-        pass
-
 		# Cross the two individuals "in-place"
 		# NB! Don't forget to use the crossover probability
-		
-        ##############################
-        ### YOU'RE CODE GOES HERE ####
-        ##############################
+
+        import util
+
+        for i in range(len(chromosome1)):
+            if util.flipCoin(crossoverProbability):
+                chromosome1[i], chromosome2[i] = chromosome1[i], chromosome1[i]
 
     def Mutate(self, chromosome, mutationProbability):
-        pass
-
         # Mutate the individuals "in-place"
 		# NB! Don't forget to apply the mutation probability to each bit
-		
-		##############################
-        ### YOU'RE CODE GOES HERE ####
-        ##############################
+
+        import util
+
+        for i in range(len(chromosome)):
+            if util.flipCoin(mutationProbability):
+                chromosome[i] = 1 - chromosome[i]
 
     def InsertBestIndividual(self, population, individual, numberOfBestIndividualCopies):
         for i in range(numberOfBestIndividualCopies):
