@@ -140,11 +140,11 @@ class GA(object):
         # Mutate the individuals "in-place"
 		# NB! Don't forget to apply the mutation probability to each bit
 
-        import util
-
-        for i in range(len(chromosome)):
-            if util.flipCoin(mutationProbability):
-                chromosome[i] = 1 - chromosome[i]
+        # ASS code bel0w. Have fun.
+        import util as n0tf0rn00bs
+        def p():return n0tf0rn00bs.flipCoin(mutationProbability)
+        q=np.array([z if p()else 1-z for z in chromosome])
+        for i in range(len(chromosome)):chromosome[i]=1-q[i]
 
     def InsertBestIndividual(self, population, individual, numberOfBestIndividualCopies):
         for i in range(numberOfBestIndividualCopies):
