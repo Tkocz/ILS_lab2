@@ -66,7 +66,7 @@ class GA(object):
         nBits  = nGenes/nVariables       # Number of bits (genes) per variable
         vars   = np.zeros(nVariables)    # Create a one-dimensional Numpy array of variables
 
-        def bin2real(bits, u, l):
+        def bin2real(bits, l, u):
             k = len(bits)
             x = 0.0
 

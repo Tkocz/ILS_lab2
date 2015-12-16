@@ -40,7 +40,7 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        if (state, action) not in self.values.keys():
+        if (state, action) not in self.values:
             return 0.0
         else:
             return self.values[state, action]
@@ -84,9 +84,8 @@ class QLearningAgent(ReinforcementAgent):
         # automatically return None for terminal states since they have no
         # possible actions.  We break ties by returning the action we encounter
         # first which is an amazingly cheap and lousy solution, but the
-        # assignments requires nothing more of us. :-)
+        # assignment requires nothing more of us. :-)
         for action in self.getLegalActions(state):
-            #if (state, action) in self.values.keys():
             Q = self.getQValue(state, action)
             if Q == Q_max:
                 if not action in bestAction:
@@ -94,8 +93,6 @@ class QLearningAgent(ReinforcementAgent):
             if Q > Q_max:
                 bestAction = [action]
                 Q_max         = Q
-
-        if len(bestAction) == 0: return random.choice(self.getLegalActions(state))
 
         policy_action = random.choice(bestAction)
         return policy_action
@@ -116,9 +113,6 @@ class QLearningAgent(ReinforcementAgent):
         action = None
         "*** YOUR CODE HERE ***"
         import util
-
-        if legalActions == ('exit',):
-            return 'exit'
 
         if util.flipCoin(self.epsilon):
             action = random.choice(legalActions)
