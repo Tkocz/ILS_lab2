@@ -94,7 +94,7 @@ class GA(object):
 
         import random
 
-        r = random.random()
+        r = random.random() * sum(list(normalizedFitness))
         n = len(normalizedFitness)
         x = 0.0
 
