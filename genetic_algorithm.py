@@ -99,7 +99,7 @@ class GA(object):
         x = 0.0
 
         for i in range(n):
-            x += int(normalizedFitness[i][0])
+            x += float(normalizedFitness[i][0])
             if x > r:
                 return i
 
@@ -134,7 +134,7 @@ class GA(object):
 
         for i in range(len(chromosome1)):
             if util.flipCoin(crossoverProbability):
-                chromosome1[i], chromosome2[i] = chromosome1[i], chromosome1[i]
+                chromosome1[i], chromosome2[i] = chromosome2[i], chromosome1[i]
 
     def Mutate(self, chromosome, mutationProbability):
         # Mutate the individuals "in-place"
