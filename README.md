@@ -1,4 +1,4 @@
-# ILS lab2
+# Intelligenta och Lärande System - Laboration 2
 ## -MDPs, RL & GA
 Denna laborationen behandlar den <i>Genetiska Algoritmen, Markov Decision Processes
 (MDP)</i> och <i>Reinforcement Learning (RL)</i>, där <i>value iteration</i> och <i>Q-learning</i>
